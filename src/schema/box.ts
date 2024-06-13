@@ -1,8 +1,11 @@
-import mongoose from 'mongoose';
+import mongoose, { Schema } from 'mongoose';
 
 const boxSchema = new mongoose.Schema({
-	name: String,
-	amount: Number,
+	name: { type: Schema.Types.String, required: true, unique: true },
+	amount: { type: Schema.Types.Number, required: true },
+	dimension: { type: Schema.Types.Mixed, required: true },
+	usage: { type: Schema.Types.Array },
+	picture: { type: Schema.Types.String },
 	createdAt: { type: Date, default: Date.now },
 });
 
