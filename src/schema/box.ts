@@ -1,6 +1,19 @@
-import mongoose, { Schema } from 'mongoose';
+import mongoose, { Schema } from "mongoose";
 
-const boxSchema = new mongoose.Schema({
+export interface IBox {
+	name: string;
+	amount: number;
+	dimension: {
+		width: number;
+		height: number;
+		depth: number;
+	};
+	usage: string[] | undefined;
+	picture: string;
+	createdAt: Date;
+}
+
+const boxSchema = new mongoose.Schema<IBox>({
 	name: { type: Schema.Types.String, required: true, unique: true },
 	amount: { type: Schema.Types.Number, required: true },
 	dimension: { type: Schema.Types.Mixed, required: true },
@@ -9,5 +22,5 @@ const boxSchema = new mongoose.Schema({
 	createdAt: { type: Date, default: Date.now },
 });
 
-const Boxes = mongoose.model('Box', boxSchema);
+const Boxes = mongoose.model("Box", boxSchema);
 export default Boxes;
