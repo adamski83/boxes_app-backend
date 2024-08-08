@@ -7,10 +7,8 @@ const router = express.Router();
 
 router.post("/register", async (req: Request, res: Response) => {
 	const { username, password } = req.body;
-	try {
-		console.log(req.body.name);
-		console.log(req.body.password);
 
+	try {
 		const user = await UserModel.findOne({ username });
 		if (user) {
 			return res.status(400).json({ type: UserErrors.USERNAME_ALREADY_EXIST });
@@ -24,7 +22,7 @@ router.post("/register", async (req: Request, res: Response) => {
 	}
 });
 
-router.post("/login", async (req: Request, res: Response) => {
+router.post("/login", async (req, res) => {
 	const { username, password } = req.body;
 
 	try {
@@ -33,12 +31,10 @@ router.post("/login", async (req: Request, res: Response) => {
 		if (!user) {
 			return res.status(400).json({ type: UserErrors.NO_USER_FOUND });
 		}
-
 		const isPasswordValid = await bcrypt.compare(password, user.password);
 		if (!isPasswordValid) {
 			return res.status(400).json({ type: UserErrors.WRONG_CREDENTIALS });
 		}
-
 		const token = jwt.sign({ id: user._id }, "secret");
 		res.json({ token, userID: user._id });
 	} catch (err) {
@@ -52,15 +48,23 @@ export const verifyToken = (
 	next: NextFunction
 ) => {
 	const authHeader = req.headers.authorization;
+	const headers = req.headers;
 	if (authHeader) {
-		jwt.verify(authHeader, "secret", (err) => {
+		console.log("Authorization Header:", authHeader);
+		const token = authHeader.split(" ")[1];
+		jwt.verify(token, "secret", (err) => {
 			if (err) {
+				console.error("JWT Verification Error:", err);
 				return res.sendStatus(403);
 			}
 			next();
 		});
+	} else {
+		console.warn("Authorization Header Missing");
+		console.log("Headers:", headers);
+
+		res.sendStatus(401);
 	}
-	res.sendStatus(401);
 };
 
 export { router as userRouter };
