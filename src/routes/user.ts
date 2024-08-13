@@ -16,7 +16,7 @@ router.post("/register", async (req: Request, res: Response) => {
 		const hashedPassword = await bcrypt.hash(password, 10);
 		const newUser = new UserModel({ username, password: hashedPassword });
 		await newUser.save();
-		res.json({ message: "User registered successfully" });
+		res.status(201).json({ message: "User registered successfully" });
 	} catch (err) {
 		res.status(500).json({ type: err });
 	}
@@ -60,7 +60,7 @@ export const verifyToken = (
 			next();
 		});
 	} else {
-		console.warn("Authorization Header Missing");
+		console.log("Authorization Header Missing");
 		console.log("Headers:", headers);
 
 		res.sendStatus(401);
