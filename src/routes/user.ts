@@ -22,7 +22,7 @@ router.post("/register", async (req: Request, res: Response) => {
 	}
 });
 
-router.post("/login", async (req, res) => {
+router.post("/login", async (req: Request, res: Response) => {
 	const { username, password } = req.body;
 
 	try {
@@ -48,9 +48,7 @@ export const verifyToken = (
 	next: NextFunction
 ) => {
 	const authHeader = req.headers.authorization;
-	const headers = req.headers;
 	if (authHeader) {
-		console.log("Authorization Header:", authHeader);
 		const token = authHeader.split(" ")[1];
 		jwt.verify(token, "secret", (err) => {
 			if (err) {
@@ -60,9 +58,6 @@ export const verifyToken = (
 			next();
 		});
 	} else {
-		console.log("Authorization Header Missing");
-		console.log("Headers:", headers);
-
 		res.sendStatus(401);
 	}
 };

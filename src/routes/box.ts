@@ -30,10 +30,19 @@ router.get("/box/:id", async (req: Request, res: Response) => {
 });
 
 router.post("/box", async (req: Request, res: Response) => {
-	const { name, description } = req.body;
+	const { name, description, amount, dimension, usage, picture, createdAt } =
+		req.body;
 
 	try {
-		const newBox = new Boxes({ name, description });
+		const newBox = new Boxes({
+			name,
+			description,
+			amount,
+			dimension,
+			usage,
+			picture,
+			createdAt,
+		});
 		await newBox.save();
 		res.status(201).json(newBox);
 	} catch (error) {
