@@ -12,7 +12,13 @@ const corsOptions = {
 	methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
 	allowedHeaders: ["Content-Type", "Authorization"],
 };
-mongoose.connect(`${process.env.DB_URL}`).catch((error) => console.log(error));
+
+mongoose
+	.connect(process.env.MONGODB_CONNECTION_STRING as string, {
+		serverSelectionTimeoutMS: 5000,
+	})
+	.then(() => console.log("connected to DB"))
+	.catch((error) => console.log(error));
 
 const app = express();
 
