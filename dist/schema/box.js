@@ -32,5 +32,5 @@ const boxSchema = new mongoose_1.default.Schema({
     picture: { type: mongoose_1.Schema.Types.String },
     createdAt: { type: Date, default: Date.now },
 });
-const Boxes = mongoose_1.default.model('Box', boxSchema);
+const Boxes = mongoose_1.default.model("Box", boxSchema);
 exports.default = Boxes;
