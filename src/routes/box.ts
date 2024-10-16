@@ -13,6 +13,20 @@ router.get("/box/search", verifyToken, async (req: Request, res: Response) => {
 	}
 });
 
+router.get("/box/:id", async (req: Request, res: Response) => {
+	const { id } = req.params;
+
+	try {
+		const box = await Boxes.findById(id);
+		if (!box) {
+			return res.status(404).json({ message: "Box not found" });
+		}
+		return res.status(200).json(box);
+	} catch (error) {
+		return res.status(500).json({ message: "Internal server error", error });
+	}
+});
+
 router.delete("/box/:id", async (req: Request, res: Response) => {
 	const { id } = req.params;
 
@@ -69,7 +83,7 @@ router.put("/box/:id", async (req: Request, res: Response) => {
 	const boxId = req.params.id;
 	const { name, description, amount, dimension, usage, picture, createdAt } =
 		req.body;
-	console.log(boxId);
+	console.log(req.body.amount);
 
 	try {
 		const box = await Boxes.findByIdAndUpdate(
