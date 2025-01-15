@@ -59,8 +59,18 @@ router.delete("/box/:id", async (req: Request, res: Response) => {
 });
 
 router.post("/box", async (req: Request, res: Response) => {
-	const { name, description, amount, dimension, usage, picture, createdAt } =
-		req.body;
+	const {
+		name,
+		description,
+		amount,
+		dimension,
+		usage,
+		picture,
+		createdAt,
+		storage,
+	} = req.body;
+
+	console.log(req.body);
 
 	try {
 		const newBox = new Boxes({
@@ -71,6 +81,7 @@ router.post("/box", async (req: Request, res: Response) => {
 			usage,
 			picture,
 			createdAt,
+			storage,
 		});
 		await newBox.save();
 		res.status(201).json(newBox);
@@ -81,14 +92,31 @@ router.post("/box", async (req: Request, res: Response) => {
 
 router.put("/box/:id", async (req: Request, res: Response) => {
 	const boxId = req.params.id;
-	const { name, description, amount, dimension, usage, picture, createdAt } =
-		req.body;
+	const {
+		name,
+		description,
+		amount,
+		dimension,
+		usage,
+		picture,
+		createdAt,
+		storage,
+	} = req.body;
 	console.log(req.body.amount);
 
 	try {
 		const box = await Boxes.findByIdAndUpdate(
 			boxId,
-			{ name, description, amount, dimension, usage, picture, createdAt },
+			{
+				name,
+				description,
+				amount,
+				dimension,
+				usage,
+				picture,
+				createdAt,
+				storage,
+			},
 			{ new: true }
 		);
 		if (!box) {
