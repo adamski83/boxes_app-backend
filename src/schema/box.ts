@@ -12,6 +12,7 @@ export interface IBox {
 	picture: string;
 	createdAt: Date;
 	storage: string;
+	status: string;
 }
 
 const boxSchema = new mongoose.Schema<IBox>({
@@ -22,6 +23,7 @@ const boxSchema = new mongoose.Schema<IBox>({
 	picture: { type: Schema.Types.String },
 	createdAt: { type: Date, default: Date.now },
 	storage: { type: Schema.Types.String },
+	status: { type: Schema.Types.String },
 });
 
 const Boxes = mongoose.model("Box", boxSchema);

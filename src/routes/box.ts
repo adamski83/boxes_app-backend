@@ -68,6 +68,7 @@ router.post("/box", async (req: Request, res: Response) => {
 		picture,
 		createdAt,
 		storage,
+		status,
 	} = req.body;
 
 	console.log(req.body);
@@ -82,6 +83,7 @@ router.post("/box", async (req: Request, res: Response) => {
 			picture,
 			createdAt,
 			storage,
+			status,
 		});
 		await newBox.save();
 		res.status(201).json(newBox);
@@ -101,6 +103,7 @@ router.put("/box/:id", async (req: Request, res: Response) => {
 		picture,
 		createdAt,
 		storage,
+		status,
 	} = req.body;
 	console.log(req.body.amount);
 
@@ -116,6 +119,7 @@ router.put("/box/:id", async (req: Request, res: Response) => {
 				picture,
 				createdAt,
 				storage,
+				status,
 			},
 			{ new: true }
 		);
