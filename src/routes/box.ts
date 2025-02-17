@@ -94,6 +94,8 @@ router.post("/box", async (req: Request, res: Response) => {
 
 router.put("/box/:id", async (req: Request, res: Response) => {
 	const boxId = req.params.id;
+	console.log(boxId);
+
 	const {
 		name,
 		description,
@@ -105,7 +107,7 @@ router.put("/box/:id", async (req: Request, res: Response) => {
 		storage,
 		status,
 	} = req.body;
-	console.log(req.body.amount);
+	console.log(req.body);
 
 	try {
 		const box = await Boxes.findByIdAndUpdate(
