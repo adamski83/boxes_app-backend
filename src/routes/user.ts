@@ -14,7 +14,11 @@ router.post("/register", async (req: Request, res: Response) => {
 			return res.status(400).json({ type: UserErrors.USERNAME_ALREADY_EXIST });
 		}
 		const hashedPassword = await bcrypt.hash(password, 10);
-		const newUser = new UserModel({ username, password: hashedPassword });
+		const newUser = new UserModel({
+			username,
+			password: hashedPassword,
+			role: "user",
+		});
 		await newUser.save();
 		res.status(201).json({ message: "User registered successfully" });
 	} catch (err) {
@@ -35,8 +39,17 @@ router.post("/login", async (req: Request, res: Response) => {
 		if (!isPasswordValid) {
 			return res.status(400).json({ type: UserErrors.WRONG_CREDENTIALS });
 		}
-		const token = jwt.sign({ id: user._id }, "secret");
-		res.json({ token, userID: user._id });
+		const token = jwt.sign({ id: user._id, role: user.role }, "secret", {
+			expiresIn: "1h",
+		});
+		res.status(200).json({
+			token,
+			user: {
+				id: user._id,
+				username: user.username,
+				role: user.role,
+			},
+		});
 	} catch (err) {
 		res.status(500).json({ type: err });
 	}

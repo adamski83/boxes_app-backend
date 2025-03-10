@@ -2,7 +2,6 @@ import express, { Request, Response } from "express";
 import Boxes from "../schema/box";
 import { verifyToken } from "./user";
 import { isValidObjectId } from "mongoose";
-
 const router = express.Router();
 
 const validateObjectId = (
@@ -22,7 +21,24 @@ const validateObjectId = (
 
 router.get("/box/search", verifyToken, async (req: Request, res: Response) => {
 	try {
-		const allBoxes = await Boxes.find({});
+		const { name, category } = req.query;
+		const query: Record<string, unknown> = {};
+
+		if (name) {
+			query.name = { $regex: name, $options: "i" };
+		}
+
+		if (category) {
+			// Obsługa pojedynczej kategorii lub wielu kategorii jako tablica
+			if (Array.isArray(category)) {
+				query.category = { $in: category };
+			} else {
+				query.category = category;
+			}
+		}
+
+		const allBoxes = await Boxes.find(query);
+
 		return res.status(200).json({
 			success: true,
 			count: allBoxes.length,
@@ -71,6 +87,7 @@ router.delete(
 	"/box/:_id",
 	verifyToken,
 	validateObjectId,
+	// requireAdmin,
 	async (req: Request, res: Response) => {
 		const { _id } = req.params;
 
@@ -111,6 +128,7 @@ router.post("/box", verifyToken, async (req: Request, res: Response) => {
 		createdAt,
 		storage,
 		status,
+		category,
 	} = req.body;
 
 	if (!name || name.trim() === "") {
@@ -131,6 +149,7 @@ router.post("/box", verifyToken, async (req: Request, res: Response) => {
 			createdAt: createdAt || new Date(),
 			storage,
 			status: status || "TODO",
+			category: category || "tape",
 		});
 
 		await newBox.save();

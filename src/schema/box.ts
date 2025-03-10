@@ -1,30 +1,53 @@
-import mongoose, { Schema } from "mongoose";
+import mongoose from "mongoose";
 
-export interface IBox {
-	name: string;
-	amount: number;
+const BoxSchema = new mongoose.Schema({
+	name: {
+		type: String,
+		required: [true, "Nazwa jest wymagana"],
+	},
+	description: {
+		type: String,
+	},
+	amount: {
+		type: Number,
+		required: [true, "Ilość jest wymagana"],
+		min: [0, "Ilość nie może być mniejsza niż 0"],
+	},
 	dimension: {
-		width: number;
-		height: number;
-		depth: number;
-	};
-	usage: string[] | undefined;
-	picture: string;
-	createdAt: Date;
-	storage: string;
-	status: string;
-}
-
-const boxSchema = new mongoose.Schema<IBox>({
-	name: { type: Schema.Types.String, required: true, unique: true },
-	amount: { type: Schema.Types.Number, required: true },
-	dimension: { type: Schema.Types.Mixed },
-	usage: { type: Schema.Types.Array },
-	picture: { type: Schema.Types.String },
-	createdAt: { type: Date, default: Date.now },
-	storage: { type: Schema.Types.String },
-	status: { type: Schema.Types.String },
+		type: String,
+	},
+	usage: {
+		type: String,
+	},
+	picture: {
+		type: String,
+	},
+	createdAt: {
+		type: Date,
+		default: Date.now,
+	},
+	storage: {
+		type: String,
+		enum: [
+			"Warehouse A",
+			"Warehouse B",
+			"Storage Room 1",
+			"Storage Room 2",
+			"External Storage",
+		],
+		default: "Warehouse A",
+	},
+	category: {
+		type: String,
+		enum: ["box", "tape", "foil", "sticker", "filler", "other"],
+		required: [true, "Kategoria jest wymagana"],
+		default: "other",
+	},
+	status: {
+		type: String,
+		enum: ["TODO", "IN_PROGRESS", "DONE"],
+		default: "TODO",
+	},
 });
 
-const Boxes = mongoose.model("Box", boxSchema);
-export default Boxes;
+export default mongoose.model("Boxes", BoxSchema);
