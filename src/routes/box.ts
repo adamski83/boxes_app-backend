@@ -1,7 +1,8 @@
 import express, { Request, Response } from "express";
 import Boxes from "../schema/box";
-import { verifyToken } from "./user";
+import { verifyToken } from "../middleware/verifyToken";
 import { isValidObjectId } from "mongoose";
+import { requireAdmin } from "../middleware/requireAdmin";
 const router = express.Router();
 
 const validateObjectId = (
@@ -87,7 +88,7 @@ router.delete(
 	"/box/:_id",
 	verifyToken,
 	validateObjectId,
-	// requireAdmin,
+	requireAdmin,
 	async (req: Request, res: Response) => {
 		const { _id } = req.params;
 

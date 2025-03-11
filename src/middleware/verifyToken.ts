@@ -19,7 +19,8 @@ export const verifyToken = (
 
 		const token = authHeader.split(" ")[1];
 
-		jwt.verify(token, process.env.JWT_SECRET || "secret", (err, decoded) => {
+		// Weryfikuj token, ale nie zapisuj danych w req.user
+		jwt.verify(token, process.env.JWT_SECRET || "secret", (err) => {
 			if (err) {
 				return res.status(403).json({
 					success: false,
@@ -27,14 +28,8 @@ export const verifyToken = (
 				});
 			}
 
-			// Dodaj zdekodowane dane do obiektu request
-			req.user = decoded;
-
-			// Jeśli potrzebujesz dostępu do roli
-			if (decoded && typeof decoded === "object" && "role" in decoded) {
-				req.role = decoded.role;
-			}
-
+			// Zapisujemy sam token do wykorzystania w kolejnych middleware'ach
+			req.headers.token = token;
 			next();
 		});
 	} catch (error) {
