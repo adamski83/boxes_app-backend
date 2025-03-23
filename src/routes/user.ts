@@ -39,9 +39,8 @@ router.post("/login", async (req: Request, res: Response) => {
 		if (!isPasswordValid) {
 			return res.status(400).json({ type: UserErrors.WRONG_CREDENTIALS });
 		}
-		const token = jwt.sign({ id: user._id, role: user.role }, "secret", {
-			expiresIn: "1h",
-		});
+		const token = jwt.sign({ id: user._id, role: user.role }, "secret");
+
 		res.status(200).json({
 			token,
 			user: {
