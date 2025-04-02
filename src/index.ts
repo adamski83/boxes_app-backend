@@ -3,8 +3,12 @@ import cookieParser from "cookie-parser";
 import "dotenv/config";
 import mongoose from "mongoose";
 import cors from "cors";
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import * as arduinoHandler from "./arduino";
+
 import { boxRouter } from "./routes/box";
 import { userRouter } from "./routes/user";
+import { arduinoRouter } from "./routes/arduino";
 
 const corsOptions = {
 	origin: "http://localhost:5173",
@@ -30,7 +34,7 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use("/user", userRouter);
 app.use("/api", boxRouter);
-
+// app.use("/arduino", arduinoRouter);
 app.listen(5001, () => {
 	console.log(`app is running on http://localhost:5001`);
 });
