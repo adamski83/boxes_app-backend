@@ -7,11 +7,21 @@ router.get("/data", (_, res) => {
 	const data = arduinoHandler.getLatestData();
 	const statusInfo = arduinoHandler.getConnectionStatus();
 
-	if (data === null) {
-		return res.status(404).json({
-			success: false,
-			message: "Brak danych z Arduino",
+	if (!statusInfo.connected) {
+		return res.json({
+			...statusInfo,
 			lastUpdate: new Date().toISOString(),
+			data: null,
+			message: "Podłącz arduino",
+		});
+	}
+
+	if (data === null) {
+		return res.json({
+			...statusInfo,
+			lastUpdate: new Date().toISOString(),
+			data: null,
+			message: "Oczekiwanie na dane z Arduino...",
 		});
 	}
 
@@ -19,42 +29,52 @@ router.get("/data", (_, res) => {
 		...statusInfo,
 		lastUpdate: new Date().toISOString(),
 		data: data,
+		message: null,
 	});
 });
 
-router.get("/status", (req, res) => {
+router.get("/status", (_, res) => {
 	const statusInfo = arduinoHandler.getConnectionStatus();
 
 	res.json({
 		...statusInfo,
 		timestamp: new Date().toISOString(),
+		message: statusInfo.connected ? null : "Podłącz arduino",
 	});
 });
 
 router.post("/command", async (req, res) => {
+	const { command } = req.body;
+
+	if (!command) {
+		return res.status(400).json({
+			success: false,
+			message: "Brak komendy",
+		});
+	}
+
+	const statusInfo = arduinoHandler.getConnectionStatus();
+
+	if (!statusInfo.connected) {
+		return res.json({
+			success: false,
+			message: "Podłącz arduino",
+			timestamp: new Date().toISOString(),
+		});
+	}
+
 	try {
-		const { command } = req.body;
-
-		if (!command) {
-			return res.status(400).json({
-				success: false,
-				message: "Brak komendy w zapytaniu",
-			});
-		}
-
 		await arduinoHandler.sendCommand(command);
 		res.json({
 			success: true,
 			message: "Komenda wysłana pomyślnie",
-			command,
 			timestamp: new Date().toISOString(),
 		});
-	} catch (error: unknown) {
-		console.error("Błąd wysyłania komendy do Arduino:", error);
+	} catch (err) {
 		res.status(500).json({
 			success: false,
 			message:
-				error instanceof Error ? error.message : "Błąd wysyłania komendy",
+				err instanceof Error ? err.message : "Błąd podczas wysyłania komendy",
 			timestamp: new Date().toISOString(),
 		});
 	}

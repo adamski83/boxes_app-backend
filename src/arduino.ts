@@ -4,6 +4,14 @@ import { EventEmitter } from "events";
 import { Server } from "http";
 import { Server as SocketServer } from "socket.io";
 
+process.on("unhandledRejection", (reason, promise) => {
+	console.error("Nieobsłużona obietnica rejection:", reason);
+});
+
+process.on("uncaughtException", (error) => {
+	console.error("Nieobsłużony wyjątek:", error);
+});
+
 const arduinoEvents = new EventEmitter();
 
 const port = new SerialPort({

@@ -34,7 +34,23 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use("/user", userRouter);
 app.use("/api", boxRouter);
-// app.use("/arduino", arduinoRouter);
+// try {
+// 	app.use("/arduino", arduinoRouter);
+// } catch (error) {
+// 	console.error("Nie można zainicjalizować Arduino:", error);
+
+// 	const fallbackRouter = express.Router();
+// 	fallbackRouter.all("*", (req, res) => {
+// 		res.json({
+// 			connected: false,
+// 			message: "Podłącz arduino",
+// 			lastUpdate: new Date().toISOString(),
+// 			data: null,
+// 		});
+// 	});
+
+// 	app.use("/arduino", fallbackRouter);
+// }
 app.listen(5001, () => {
 	console.log(`app is running on http://localhost:5001`);
 });
