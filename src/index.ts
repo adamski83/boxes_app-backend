@@ -3,8 +3,12 @@ import cookieParser from "cookie-parser";
 import "dotenv/config";
 import mongoose from "mongoose";
 import cors from "cors";
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import * as arduinoHandler from "./arduino";
+
 import { boxRouter } from "./routes/box";
 import { userRouter } from "./routes/user";
+import { arduinoRouter } from "./routes/arduino";
 
 const corsOptions = {
 	origin: "http://localhost:5173",
@@ -30,7 +34,23 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use("/user", userRouter);
 app.use("/api", boxRouter);
+// try {
+// 	app.use("/arduino", arduinoRouter);
+// } catch (error) {
+// 	console.error("Nie można zainicjalizować Arduino:", error);
 
+// 	const fallbackRouter = express.Router();
+// 	fallbackRouter.all("*", (req, res) => {
+// 		res.json({
+// 			connected: false,
+// 			message: "Podłącz arduino",
+// 			lastUpdate: new Date().toISOString(),
+// 			data: null,
+// 		});
+// 	});
+
+// 	app.use("/arduino", fallbackRouter);
+// }
 app.listen(5001, () => {
 	console.log(`app is running on http://localhost:5001`);
 });
