@@ -1,6 +1,7 @@
 import express from "express";
 import cookieParser from "cookie-parser";
 import "dotenv/config";
+import path from "path";
 import mongoose from "mongoose";
 import cors from "cors";
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -8,10 +9,10 @@ import * as arduinoHandler from "./arduino";
 
 import { boxRouter } from "./routes/box";
 import { userRouter } from "./routes/user";
-import { arduinoRouter } from "./routes/arduino";
+// import { arduinoRouter } from "./routes/arduino";
 
 const corsOptions = {
-	origin: "http://localhost:5173",
+	origin: ["http://localhost:5173", "http://localhost:3000"],
 	httpOnly: true,
 	credentials: true,
 	methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
@@ -27,6 +28,7 @@ mongoose
 
 const app = express();
 
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 app.use(express.json());
 app.use(cors(corsOptions));
 app.use(cookieParser());
