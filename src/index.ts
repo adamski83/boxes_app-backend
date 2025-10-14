@@ -9,6 +9,7 @@ import * as arduinoHandler from "./arduino";
 
 import { boxRouter } from "./routes/box";
 import { userRouter } from "./routes/user";
+import { pdfRouter } from "./routes/pdf";
 // import { arduinoRouter } from "./routes/arduino";
 
 const corsOptions = {
@@ -23,19 +24,30 @@ mongoose
 	.connect(process.env.MONGODB_CONNECTION_STRING as string, {
 		serverSelectionTimeoutMS: 5000,
 	})
-	.then(() => console.log("connected to DB"))
-	.catch((error) => console.log(error));
+	.then(() => console.log("✅ Połączono z bazą danych MongoDB"))
+	.catch((error) => {
+		console.error("❌ Błąd połączenia z bazą danych:", error);
+		process.exit(1);
+	});
 
 const app = express();
 
-app.use("/uploads", express.static(path.join(__dirname, "uploads")));
-app.use(express.json());
 app.use(cors(corsOptions));
-app.use(cookieParser());
+app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
+
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+app.use("/pdfs", express.static(path.join(__dirname, "pdfs")));
+
+app.use((req, res, next) => {
+	console.log(`${req.method} ${req.path}`);
+	next();
+});
 
 app.use("/user", userRouter);
 app.use("/api", boxRouter);
+app.use("/api", pdfRouter);
 // try {
 // 	app.use("/arduino", arduinoRouter);
 // } catch (error) {
@@ -53,6 +65,26 @@ app.use("/api", boxRouter);
 
 // 	app.use("/arduino", fallbackRouter);
 // }
-app.listen(5001, () => {
-	console.log(`app is running on http://localhost:5001`);
+app.use(
+	(
+		err: any,
+		req: express.Request,
+		res: express.Response,
+		next: express.NextFunction
+	) => {
+		console.error("Błąd serwera:", err);
+		res.status(500).json({
+			success: false,
+			message: "Wewnętrzny błąd serwera",
+			error: process.env.NODE_ENV === "development" ? err.message : undefined,
+		});
+	}
+);
+
+const PORT = process.env.PORT || 5001;
+
+app.listen(PORT, () => {
+	console.log(`🚀 Serwer działa na http://localhost:${PORT}`);
+	console.log(`📁 Statyczne pliki uploads: http://localhost:${PORT}/uploads`);
+	console.log(`📄 Statyczne pliki PDF: http://localhost:${PORT}/pdfs`);
 });
